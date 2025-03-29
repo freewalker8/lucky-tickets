@@ -30,8 +30,8 @@ module.exports = {
 lucky命令支持配置的参数：
 
 ```bash
-  --pages <pages>   爬取页数，默认为5
-  --tickets <tickets>   生成的投注数量，默认为5
+  --pages <number>   爬取页数，默认为5
+  --tickets <number>   生成的投注数量，默认为5
 ```
 
 eg:
