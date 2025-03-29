@@ -23,7 +23,7 @@ module.exports = {
 }
 ```
 
-国内下载一个 Chrome 存在网络问题，故没依赖`puppeteer`而是依赖`puppeteer-core`，所以本地启动时需要先配置`executablePath`属性为你本地的Chrome路径。
+国内下载`puppeteer`内置的 Chrome 存在网络问题，故没依赖`puppeteer`而是依赖`puppeteer-core`，所以本地启动时需要先配置`executablePath`属性为你本地的Chrome路径。
 
 # 命令行参数
 
