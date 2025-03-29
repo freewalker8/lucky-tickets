@@ -22,7 +22,7 @@ function reslovePath(filePath) {
     fs.mkdirSync(realPath);
   }
 
-  console.log("Save Path", realPath);
+  console.log("结果保存路径：", realPath);
   return realPath;
 }
 

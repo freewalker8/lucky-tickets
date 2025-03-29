@@ -4,7 +4,7 @@
   "description": "auto generate lucky numbers of shuangSeQiu",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "lucky": "node src/index.js"
   },
   "keywords": [
     "lottery ticket lucky numbers",

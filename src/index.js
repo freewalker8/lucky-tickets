@@ -1,15 +1,13 @@
 const puppeteer = require("puppeteer-core");
+const config = require('./config');
 const { getNumbersByPage } = require('./getPageNumbers');
 const genLuckyNumbers = require('./genLuckyNumbers');
 const { printLuckyNumbers } = require('./printLuckyNumbers');
+const parsedArgs = require('./parseArgs');
 
 (async () => {
   // 启动浏览器
-  const browser = await puppeteer.launch({ 
-    executablePath: "C:\\Users\\stone\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe",
-    headless: true, // 可视化模式（调试时建议开启，设置为false）
-    // devtools: true,
-    });
+  const browser = await puppeteer.launch(config);
 
   const page = await browser.newPage();
 
@@ -19,10 +17,10 @@ const { printLuckyNumbers } = require('./printLuckyNumbers');
   await page.setViewport({width: 1080, height: 1024});
 
   // 爬取开奖号码，这里爬取1-5页的开奖记录
-  const ticketNumbers = await getNumbersByPage(page, 1);
+  const ticketNumbers = await getNumbersByPage(page, parsedArgs.pages);
 
   // 根据历史开奖号码生成自己的幸运号码
-  const luckyNumbers = genLuckyNumbers(ticketNumbers, 5);
+  const luckyNumbers = genLuckyNumbers(ticketNumbers, parsedArgs.tickets);
 
   // 打印自己的幸运号码，保存为图片
   await printLuckyNumbers(browser, luckyNumbers);
