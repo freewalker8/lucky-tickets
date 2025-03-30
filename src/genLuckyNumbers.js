@@ -49,12 +49,47 @@ function _genOneTicket(flattenedRedNumbers, flattenedBlueNumbers) {
       continue;
     }
 
+    // 红球生成完毕，对红球排序
+    ticket.sort((a, b) => a - b);
+
     // 蓝球
     const blueNumber = _pickNumber(flattenedBlueNumbers);
     ticket.push(blueNumber);
   }
 
   return ticket;
+}
+
+/**
+ * 检查每期追投的投注号码红球和蓝球号码格式是否正确并对红球排序
+ * @param {Array<Number>} trackingTicket 每期追投的投注号码
+ * @returns {Array<Number>} 排好序的红球和蓝球号码
+ */
+function _checkTrckingTicketAndSort(trackingTicket) {
+  const ticket = [...trackingTicket];
+  // 取出篮球号码
+  const blueNumber = ticket.pop();
+  // 红球号码
+  const redNumbers = ticket;
+  // 检查每期追投的投注号码红球格式是否正确
+  if (!redNumbers.every(num => typeof num === 'number' && num >= 1 && num <= 33)) {
+    console.log('红球号码为1-33的数字');
+    const errMsg = `每期追投的投注号码红球号码格式不正确，请检查config.js中的trackingTickets配置，非法红球号码：${redNumbers}，非法投注号码信息：${ticket}`;
+    throw new Error(errMsg);
+  }
+  
+  // 检查篮球号码格式是否正确
+  if (typeof blueNumber !== 'number' || blueNumber < 1 || blueNumber > 16) {
+    console.log('蓝球号码为1-16的数字');
+    const errMsg = `每期追投的投注号码蓝球号码格式不正确，请检查config.js中的trackingTickets配置，非法蓝球号码：${blueNumber}，非法投注号码信息：${ticket}`;
+    throw new Error(errMsg);
+  }
+  
+  // 对红球排序
+  redNumbers.sort((a, b) => a - b);
+
+  // 返回排序后的红球和蓝球号码
+  return [...redNumbers, blueNumber];
 }
 
 /**
@@ -71,7 +106,12 @@ function genLuckyNumbers(pageNumbers, count) {
 
   // 设置了每期追投的投注号码
   if (Array.isArray(trackingTickets) && trackingTickets.length) {
-    luckyNumbers.push(...trackingTickets);
+    trackingTickets.forEach(ticket => {
+      // 检查每期追投的投注号码红球和蓝球号码格式是否正确并对红球排序
+      const validTicket = _checkTrckingTicketAndSort(ticket);
+      // 将追投的投注号码压入结果数组中
+      luckyNumbers.push(validTicket);
+    });
     autoGenCount = count - trackingTickets.length;
 
     if (trackingTickets.length >= count) {
