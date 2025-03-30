@@ -138,7 +138,7 @@ async function printLuckyNumbers(browser, ticketNumbers = []) {
     path: getPicturePathAndName(),
   });
 
-  console.log("Lucky numbers:", ticketNumbers);
+  console.log("Lucky numbers:", ticketNumbers.map(ticket => ticket.join(' ')));
 
   newPage.close();
 }
