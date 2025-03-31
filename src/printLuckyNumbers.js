@@ -2,6 +2,8 @@ const dayjs = require("dayjs");
 const path = require("path");
 const fs = require("fs");
 
+const BASE_PATH = "./dist-tickets";
+
 /**
  * 获取图片的保存路径，路径不存在时就创建对应的文件夹
  * @param {String} filePath 图片的保存路径，相对于项目根目录
@@ -34,7 +36,7 @@ function reslovePath(filePath) {
  */
 function getDistPathAndName(
   baseName = "luckyNumbers",
-  basePath = "./dist-tickets"
+  basePath = BASE_PATH
 ) {
   const dateTime = dayjs(new Date()).format("YYYY-MM-DD-HH-mm-ss");
   return `${reslovePath(basePath)}/${baseName}_${dateTime}`;
@@ -143,6 +145,9 @@ async function printLuckyNumbers(browser, ticketNumbers = []) {
 
   // 将投注记录保存为json文件
   fs.writeFileSync(recordPathAndName, JSON.stringify({ ticketNumbers }));
+
+  fs.writeFileSync(`${reslovePath(BASE_PATH)}/latest_tickets.json`, JSON.stringify({ ticketNumbers }))
+
 
   console.log("Lucky numbers:", ticketNumbers.map(ticket => ticket.join(' ')));
 
