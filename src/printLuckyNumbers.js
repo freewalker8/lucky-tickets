@@ -30,14 +30,14 @@ function reslovePath(filePath) {
  * 获取图片的保存路径和图片名称
  * @param {String} baseName 图片的基础名称
  * @param {String} basePath 图片的保持路径，相对于根目录
- * @returns {String} 图片保存路径
+ * @returns {String} 文件保存路径，最后一个路径是文件名称
  */
-function getPicturePathAndName(
+function getDistPathAndName(
   baseName = "luckyNumbers",
   basePath = "./dist-tickets"
 ) {
   const dateTime = dayjs(new Date()).format("YYYY-MM-DD-HH-mm-ss");
-  return `${reslovePath(basePath)}/${baseName}_${dateTime}.png`;
+  return `${reslovePath(basePath)}/${baseName}_${dateTime}`;
 }
 
 /**
@@ -133,10 +133,16 @@ async function printLuckyNumbers(browser, ticketNumbers = []) {
     </html>
     `);
 
+  const distPathAndName = getDistPathAndName();
   // 截图自定义内容
   await newPage.screenshot({
-    path: getPicturePathAndName(),
+    path: `${distPathAndName}.png`,
   });
+
+  const recordPathAndName = `${distPathAndName}.json`;
+
+  // 将投注记录保存为json文件
+  fs.writeFileSync(recordPathAndName, JSON.stringify({ ticketNumbers }));
 
   console.log("Lucky numbers:", ticketNumbers.map(ticket => ticket.join(' ')));
 
