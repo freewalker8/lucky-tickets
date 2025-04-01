@@ -1,7 +1,7 @@
 const args = process.argv.slice(2); // 跳过前两个默认参数（Node路径和脚本路径）
 // console.log("所有参数：", args);
 
-// 解析键值对参数（如 --env=pages）
+// 解析键值对参数（如 -- --pages=5 --tickets=5）
 const parsedArgs = { pages: 5, tickets: 5 };
 args.forEach(arg => {
   if (arg.startsWith('--')) {
