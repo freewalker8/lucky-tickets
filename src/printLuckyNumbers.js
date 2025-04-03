@@ -10,7 +10,7 @@ const BASE_PATH = "./dist-tickets";
  * @param {String} filePath 图片的保存路径，相对于项目根目录
  * @returns {String} 图片保存路径
  */
-function reslovePath(filePath) {
+function _reslovePath(filePath) {
   let realPath = "";
   if (path.isAbsolute(filePath)) {
     realPath = filePath;
@@ -25,29 +25,25 @@ function reslovePath(filePath) {
     fs.mkdirSync(realPath);
   }
 
-  console.log("结果保存路径：", realPath);
   return realPath;
 }
 
 /**
  * 获取图片的保存路径和图片名称
- * @param {String} baseName 图片的基础名称
- * @param {String} basePath 图片的保持路径，相对于根目录
+ * @param {String} bettingPhase 投注期号
+ * @param {String} baseName ? 图片的基础名称
+ * @param {String} basePath ? 图片的保持路径，相对于根目录
  * @returns {String} 文件保存路径，最后一个路径是文件名称
  */
-function getDistPathAndName(
+function _getScreenshotPathAndName(
+  bettingPhase,
   baseName = "luckyNumbers",
   basePath = BASE_PATH
 ) {
-  const dateTime = dayjs(new Date()).format("YYYY-MM-DD-HH-mm-ss");
-  return `${reslovePath(basePath)}/${baseName}_${dateTime}`;
+  return `${_reslovePath(basePath)}/${baseName}_${bettingPhase}.png`;
 }
 
-/**
- * 打印出选中的号码，将其保存为图片
- * @param {Array} ticketNumbers 开奖号码
- */
-async function printLuckyNumbers(browser, ticketNumbers = []) {
+async function _saveScreenShot(browser, ticketNumbers, bettingPhase) {
   const newPage = await browser.newPage();
 
   const template = ticketNumbers
@@ -65,12 +61,13 @@ async function printLuckyNumbers(browser, ticketNumbers = []) {
     })
     .join("");
 
-  await newPage.setViewport({ width: 600, height: ticketNumbers.length * 50 + 200 });
+  await newPage.setViewport({ width: 450, height: ticketNumbers.length * 50 + 200 });
 
   await newPage.setContent(`
     <html>
         <body>
             <h1 class="title">Lucky Numbers</h1>
+            <p class="phase">投注期号：${bettingPhase}</p>
             <table class="table">
                 <thead>
                     <tr>
@@ -85,20 +82,23 @@ async function printLuckyNumbers(browser, ticketNumbers = []) {
         </body>
         <style>
             body {
-                width: 600px;
+                width: 450px;
                 height: 100%;
                 margin: 0;
                 overflow: hidden;
                 background-color: #f5f5f5;
                 .title {
                     text-align: center;
-                    margin-top: 30px;
+                    margin-top: 20px;
+                }
+                .phase {
+                  text-align: center;
                 }
                 .table {
-                    width: 600px; margin: 10px auto; text-align: center;
+                    width: 450px; margin: 10px auto; text-align: center;
                     thead {
                         tr {
-                            width: 600px; margin: 10px 0; display: inline-block;
+                            width: 450px; margin: 10px 0; display: inline-block;
                             th {
                                 display: inline-block; width: 50px; height: 22px; line-height: 22px; text-align: left;
                             }
@@ -109,7 +109,7 @@ async function printLuckyNumbers(browser, ticketNumbers = []) {
                     }
                     tbody {
                         tr {
-                            width: 600px; margin: 10px 0; display: inline-block;
+                            width: 450px; margin: 10px 0; display: inline-block;
                             td {
                                 display: inline-block;
                                 width: 30px;
@@ -136,23 +136,59 @@ async function printLuckyNumbers(browser, ticketNumbers = []) {
     </html>
     `);
 
-  const distPathAndName = getDistPathAndName();
+  const screenshotFilePathAndName = _getScreenshotPathAndName(bettingPhase);
   // 截图自定义内容
   await newPage.screenshot({
-    path: `${distPathAndName}.png`,
+    path: screenshotFilePathAndName,
   });
 
-  const recordPathAndName = `${distPathAndName}.json`;
-
-  // 将投注记录保存为json文件
-  fs.writeFileSync(recordPathAndName, JSON.stringify({ ticketNumbers }));
-
-  fs.writeFileSync(`${reslovePath(BASE_PATH)}/${ticketsFileName}.json`, JSON.stringify({ ticketNumbers }))
-
-
-  console.log("Lucky numbers:", ticketNumbers.map(ticket => ticket.join(' ')));
+  console.log(`截图保存路径：${screenshotFilePathAndName}`);
 
   newPage.close();
+}
+
+/**
+ * 将对象转为自定义格式的字符串
+ * @param {Object} obj 对象
+ * @returns {String} 自定义格式的字符串
+ */
+function _customStringify(obj) {
+  return `{\n${
+    Object.entries(obj)
+      .map(([key, value]) => `  "${key}": ${JSON.stringify(value)}`)
+      .join(',\n')
+  }\n}`;
+}
+
+async function saveBettingPhase(ticketNumbers, bettingPhase) {
+  const filePath = `${_reslovePath(BASE_PATH)}/${ticketsFileName}.json`;
+
+  // 判断文件是否存在，存在就读取文件内容，将新的投注记录添加到文件中
+  if (fs.existsSync(filePath)) {
+    const data = JSON.parse(fs.readFileSync(filePath));
+    data[bettingPhase] = ticketNumbers;
+    fs.writeFileSync(filePath, _customStringify(data));
+  } else {
+    // 文件不存在，创建文件并写入数据
+    fs.writeFileSync(filePath, _customStringify({ [bettingPhase]: [ticketNumbers] }));
+  }
+
+  console.log("Lucky numbers:", ticketNumbers.map(ticket => ticket.join(' ')));
+}
+
+/**
+ * 打印出选中的号码，将其保存为图片并保存投注信息
+ * @param {Browser} browser 浏览器实例
+ * @param {Array} ticketNumbers 开奖号码
+ * @param {Number} bettingPhase 投注期号
+ */
+async function printLuckyNumbers(browser, ticketNumbers, bettingPhase) {
+  
+  // 保存投注截图
+  await _saveScreenShot(browser, ticketNumbers, bettingPhase);
+
+  // 保存投注记录
+  await saveBettingPhase(ticketNumbers, bettingPhase);
 }
 
 module.exports = { printLuckyNumbers };

@@ -92,21 +92,31 @@ function checkTicket(ticket, lotteryInfo, isPrintMessage = true) {
 /**
  * 检查投注号码是否中奖
  * @param {Object<{lotteryNumbers: Array<Number>, bonusOfLevel1: Number, bonusOfLevel2: Number, phase: String}>} lotteryInfo 开奖信息
- * @param {Array} tickets 投注号码
+ * @param {Array<Number>|String} tickets 投注号码 | 投注期号
  */
 function checkTickets(lotteryInfo, tickets) {
-  let realTickets = tickets;
-  if (!tickets) {
+  let realTickets = []; // 投注号码
+  // tickets 为期号时，从文件中读取投注记录
+  if (typeof tickets === 'string') {
     const filePath = resolvePath(`../../dist-tickets/${ticketsFileName}.json`);
-    // console.log('filePath', filePath);
     // 读取文件内容
     try {
-      realTickets = JSON.parse(fs.readFileSync(filePath, 'utf8')).ticketNumbers;
-      // console.log('realTickets', realTickets);
+      // 解析投注记录
+      const bettingRecords = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      const phase = tickets;
+      realTickets = bettingRecords[phase];
+      if (!realTickets) {
+        console.error(`warning: 未找到投注期号为${phase}的投注记录。`);
+        return;
+      }
     } catch (error) {
-      console.error('读取文件失败：', error);
+      console.error('读取投注记录文件失败：', error);
     }
+  } else {
+    // tickets 为投注号码时，直接使用传入的投注号码
+    realTickets = tickets;
   }
+  // console.log('realTickets', realTickets);
   const bonusTickets = []; // 保存中奖投注信息
   for (let i = 0; i < realTickets.length; i++) {
     const ticket = realTickets[i];
@@ -117,7 +127,11 @@ function checkTickets(lotteryInfo, tickets) {
     }    
   }
 
+  console.log('投注号码：', realTickets.map(ticket => ticket.join(' ')));
+
+  // 中奖
   if (bonusTickets.length > 0) {
+    console.log('------------------------------');
     console.log('恭喜，您中奖了！');
     console.log('中奖详情：');
     let totalBonus = 0;
