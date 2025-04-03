@@ -1,6 +1,7 @@
 const dayjs = require("dayjs");
 const path = require("path");
 const fs = require("fs");
+const { ticketsFileName } = require("./config");
 
 const BASE_PATH = "./dist-tickets";
 
@@ -146,7 +147,7 @@ async function printLuckyNumbers(browser, ticketNumbers = []) {
   // 将投注记录保存为json文件
   fs.writeFileSync(recordPathAndName, JSON.stringify({ ticketNumbers }));
 
-  fs.writeFileSync(`${reslovePath(BASE_PATH)}/latest_tickets.json`, JSON.stringify({ ticketNumbers }))
+  fs.writeFileSync(`${reslovePath(BASE_PATH)}/${ticketsFileName}.json`, JSON.stringify({ ticketNumbers }))
 
 
   console.log("Lucky numbers:", ticketNumbers.map(ticket => ticket.join(' ')));

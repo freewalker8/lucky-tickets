@@ -5,6 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { ticketsFileName } = require('../config');
 
 function resolvePath(filePath) {
   return path.resolve(__dirname, filePath);
@@ -96,7 +97,7 @@ function checkTicket(ticket, lotteryInfo, isPrintMessage = true) {
 function checkTickets(lotteryInfo, tickets) {
   let realTickets = tickets;
   if (!tickets) {
-    const filePath = resolvePath('../../dist-tickets/latest_tickets.json');
+    const filePath = resolvePath(`../../dist-tickets/${ticketsFileName}.json`);
     // console.log('filePath', filePath);
     // 读取文件内容
     try {

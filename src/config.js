@@ -14,4 +14,6 @@ module.exports = {
         [5, 6, 8, 12, 25, 29, 7],
         [6, 8, 12, 19, 25, 29, 6],
     ],
+    // 存储投注记录的文件名
+    ticketsFileName: 'luckyNumbers'
 }
