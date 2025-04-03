@@ -1,4 +1,3 @@
-const dayjs = require("dayjs");
 const path = require("path");
 const fs = require("fs");
 const { ticketsFileName } = require("./config");

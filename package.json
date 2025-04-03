@@ -1,5 +1,5 @@
 {
-  "name": "lucky-numbers",
+  "name": "lucky-tickets",
   "version": "1.0.0",
   "description": "auto generate lucky numbers of shuangSeQiu",
   "main": "index.js",
@@ -9,12 +9,13 @@
   },
   "keywords": [
     "lottery ticket lucky numbers",
-    "shuangSeQiu"
+    "shuangSeQiu",
+    "双色球",
+    "双色球号码生成"
   ],
   "author": "LiangLei",
   "license": "MIT",
   "dependencies": {
-    "dayjs": "^1.11.13",
     "puppeteer-core": "^24.4.0"
   }
 }
