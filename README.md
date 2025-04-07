@@ -7,10 +7,23 @@
 
 # 快速开始
 
-安装 && 运行
+环境准备：
+
+安装`nodejs`，根据自己操作系统类型下载[nodejs](https://nodejs.org/zh-cn/download)并安装。
+
+安装依赖：
 
 ```bash
 npm install; # 安装依赖
+```
+
+配置chrome 路径：
+
+参见下方`配置文件`说明进行配置。
+
+运行：
+
+```bash
 npm run lucky; # 生成投注号码
 npm run bonus; # 核验投注号码是否中奖
 ```
