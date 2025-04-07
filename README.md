@@ -1,6 +1,9 @@
 # lucky-tickets
 
-根据过往记录随机生成双色球号码
+根据过往记录随机生成双色球号码。支持追投功能，追投功能需要配置`trackingTickets`属性，值为追投的彩票号。
+
+运行`npm run lucky`生成投注号码。
+运行`npm run bonus`核验投注号码是否中奖，中奖后给出中奖明细。
 
 # 快速开始
 
@@ -8,10 +11,11 @@
 
 ```bash
 npm install; # 安装依赖
-npm run lucky; # 运行
+npm run lucky; # 生成投注号码
+npm run bonus; # 核验投注号码是否中奖
 ```
 
-# 配置浏览器路径
+# 配置文件
 
 配置文件为config.js，默认配置为：
 
@@ -20,12 +24,16 @@ module.exports = {
     executablePath: "C:\\Users\\stone\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe", // 本地浏览器路径
     headless: true, // 可视化模式（调试时建议开启，设置为false）
     // devtools: true, // 是否开启调试模式
+    trackingTickets: [], // 追投的彩票号，有值时生成的投注号码需包含追投号码
+    ticketsFileName: 'luckyNumbers', // 存储投注记录的文件名
 }
 ```
 
 国内下载`puppeteer`内置的 Chrome 存在网络问题，故没依赖`puppeteer`而是依赖`puppeteer-core`，所以本地启动时需要先配置`executablePath`属性为你本地的Chrome路径。
 
 # 命令行参数
+
+## lucky命令支持的参数
 
 `lucky`命令用于生成投注号码，支持配置的参数：
 
@@ -62,6 +70,8 @@ Lucky numbers: [
   ]
 ]
 ```
+
+## bonus命令支持的参数
 
 `bonus`命令用于验证投注号码是否中奖，支持配置的参数：
 
